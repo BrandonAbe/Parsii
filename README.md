@@ -96,4 +96,8 @@ pcap_parser/
   ```bash
   ./pcap_parser test.pcap --filter gptp --summary
   ./pcap_parser test.pcap --verify-cycle --src 192.168.0.10 --dst 192.168.0.20
-
+---
+### Reference Documentation
+- https://wiki.wireshark.org/Development/LibpcapFileFormat
+- https://cplusplus.com/reference/cstdio/fopen/
+- https://cplusplus.com/reference/cstdio/perror/ 
