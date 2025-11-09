@@ -101,3 +101,4 @@ pcap_parser/
 - https://wiki.wireshark.org/Development/LibpcapFileFormat
 - https://cplusplus.com/reference/cstdio/fopen/
 - https://cplusplus.com/reference/cstdio/perror/ 
+- https://www.tcpdump.org/linktypes.html

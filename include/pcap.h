@@ -7,7 +7,7 @@ typedef struct pcap_global_header {
     int32_t  thiszone;       /* GMT to local correction */
     uint32_t sigfigs;        /* accuracy of timestamps */
     uint32_t snaplen;        /* max length of captured packets, in octets */
-    uint32_t network;        /* data link type */
+    uint32_t network;        /* data link type as defined by https://www.tcpdump.org/linktypes.html*/
 } pcap_global_header;
 
 typedef struct pcap_record_header {
