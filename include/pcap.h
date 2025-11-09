@@ -1,7 +1,7 @@
 #include <stdint.h>
 
 typedef struct pcap_global_header {
-    uint32_t magic_number;   /* magic number */
+    uint32_t magic_number;   /* magic number to detect file format and byte ordering */
     uint16_t version_major;  /* major version number */
     uint16_t version_minor;  /* minor version number */
     int32_t  thiszone;       /* GMT to local correction */
