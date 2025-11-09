@@ -16,3 +16,6 @@ typedef struct pcap_record_header {
     uint32_t incl_len;       /* number of octets of packet saved in file */
     uint32_t orig_len;       /* actual length of packet */
 } pcap_record_header;
+
+
+int process_pcap_file(const char* filepath);
