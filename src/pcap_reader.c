@@ -15,9 +15,22 @@
 
 /* Function to read and process a pcap file */
 int process_pcap_file(const char* filepath){
-    FILE* *file = fopen(filepath, "rb"); // Read pcap file in binary mode
+    FILE* file = fopen(filepath, "rb"); // Read pcap file in binary mode
     if (file == NULL) {
         perror("Error opening file");
-        return -1;
+        printf("File closed.\n");
+        fclose(file); //Release allocated memory if failed to open
+        
+        return -1; 
     }
-}
+
+    printf("File opened successfully: %s\n", filepath);
+
+    //TODO: Add logic to read global header and packet records
+    /* Read global header */
+
+
+
+    fclose(file);
+    return 0; //File processed successfully
+} 
