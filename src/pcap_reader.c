@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "pcap.h"
+#include "../include/pcap.h"
 
 /* Function to read and process a pcap file */
 int process_pcap_file(const char* filepath){
@@ -28,8 +28,15 @@ int process_pcap_file(const char* filepath){
 
     //TODO: Add logic to read global header and packet records
     /* Read global header */
-
-
+    pcap_global_header_t global_header;
+    // from documentation, size_t fread( void *buffer, size_t size, size_t count, FILE *stream );
+    size_t bytes_read = fread(&global_header, sizeof(pcap_global_header_t), 1, file); // Read content at location of global_header and write into bytes_read
+    if (bytes_read != 1) {
+        perror("Error reading global header");
+        fclose(file);
+        return -1; 
+    }
+    printf("PCAP Global Header read successfully.\n");
 
     fclose(file);
     return 0; //File processed successfully
