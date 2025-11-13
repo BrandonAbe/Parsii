@@ -52,6 +52,7 @@ pcap_parser/
 ```
 ---
 ### **Phase 1️⃣: Initial PCAP Reading**
+- [✅] Load PCAP file from path specified in argv
 - [❌] Support basic PCAP format parsing
 - [❌] Extract packet timestamps
 - [❌] Handle different link types
