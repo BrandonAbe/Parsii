@@ -52,26 +52,15 @@ all: $(TARGET)
 # It depends on all the object files listed in $(OBJS). This rule will only run if
 # the target executable doesn't exist or if any of the object files are newer.
 $(TARGET): $(OBJS)
-	# Creates the binary directory (e.g., 'bin/') if it doesn't exist.
-	# The '@' symbol suppresses the printing of the command itself to the console.
 	@mkdir -p $(BIN_DIR)
-	# This is the linking command.
-	# -o $@: Specifies the output file. '$@' is an automatic variable for the target name.
-	# $^: Is an automatic variable for all the prerequisites (all the .o files).
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # This is a pattern rule that tells 'make' how to create an object file (e.g., obj/main.o)
 # from a source file (e.g., src/main.c).
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	# Creates the object directory (e.g., 'obj/') if it doesn't exist.
+
 	@mkdir -p $(OBJ_DIR)
-	# This is the compilation command.
-	# -c: Tells the compiler to create an object file but not to link it yet.
-	# $<: Is an automatic variable for the first prerequisite (the .c source file).
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-# This rule defines the 'clean' command.
 clean:
-	# Deletes the object and binary directories and all their contents, effectively
-	# cleaning the project of all compiled files.
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
