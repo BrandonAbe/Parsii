@@ -46,12 +46,12 @@ int process_pcap_file(const char* filepath){
         printf("PCAP file is in swapped byte order (byte swapping needed)\n");
         global_header.version_major = swap_uint16(global_header.version_major);
         global_header.version_minor = swap_uint16(global_header.version_minor);
-        global_header.thiszone = swap_int32(global_header.thiszone);
+        global_header.thiszone = swap_uint32(global_header.thiszone);
         global_header.sigfigs = swap_uint32(global_header.sigfigs);
         global_header.snaplen = swap_uint32(global_header.snaplen);
         global_header.network = swap_uint32(global_header.network);
     } else {
-        frpintf(stderr, "Error: Not a valid PCAP file (invalid magic number).\n");
+        fprintf(stderr, "Error: Not a valid PCAP file (invalid magic number).\n");
         fclose(file);
         return -1;
     }
