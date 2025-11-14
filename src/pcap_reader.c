@@ -39,7 +39,7 @@ int process_pcap_file(const char* filepath){
     printf("PCAP Global Header read successfully.\n");
 
 
-    /* Check magic number to determine endianness*/
+    /* Check magic number to determine endianness based on definition from PCAP standard */
     if (global_header.magic_number == 0xa1b2c3d4) {
         printf("PCAP file is in native byte order (no byte swapping needed)\n");
     } else if (global_header.magic_number == 0xd4c3b2a1) {
