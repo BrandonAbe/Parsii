@@ -19,7 +19,6 @@ int process_pcap_file(const char* filepath){
     if (file == NULL) {
         perror("Error opening file");
         printf("File closed.\n");
-        fclose(file); //Release allocated memory if failed to open
         
         return -1; 
     }
