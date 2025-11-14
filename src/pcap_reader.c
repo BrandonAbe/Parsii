@@ -37,6 +37,18 @@ int process_pcap_file(const char* filepath){
     }
     printf("PCAP Global Header read successfully.\n");
 
+
+    /* Check magic number to determine endianness*/
+    if (global_header.magic_number == 0xa1b2c3d4) {
+        printf("PCAP file is in standard byte order.\n");
+    } else if (global_header.magic_number == 0xd4c3b2a1) {
+        printf("PCAP file is in reverse byte order.\n");
+    } else {
+        frpintf(stderr, "Error: Not a valid PCAP file (invalid magic number).\n");
+        fclose(file);
+        return -1;
+    }
+
     fclose(file);
     return 0; //File processed successfully
 } 
