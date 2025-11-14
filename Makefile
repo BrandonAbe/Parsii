@@ -34,12 +34,18 @@ OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
 # TARGET: Defines the full path and name of the final executable file.
 TARGET = $(BIN_DIR)/pcap_parser
 
+# --- Test Target ---
+PCAP_READER_TEST_TARGET = $(BIN_DIR)/pcap_reader_test
+PCAP_READER_TEST_SRCS = tests/pcap_reader_tests.c src/pcap_reader.c src/utils.c
+PCAP_READER_TEST_OBJS = $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(PCAP_READER_TEST_SRCS)))
+
+
 # --- Phony Targets ---
 
 # Declares 'all' and 'clean' as "phony" targets. This tells 'make' that these are
 # just command names, not actual files. This ensures 'make' will always run the
 # associated commands, regardless of whether a file named 'all' or 'clean' exists.
-.PHONY: all clean
+.PHONY: all clean test
 
 # --- Build Rules ---
 
@@ -48,6 +54,8 @@ TARGET = $(BIN_DIR)/pcap_parser
 # 'make' must first successfully build the file defined by $(TARGET).
 all: $(TARGET)
 
+test: $(PCAP_READER_TEST_TARGET)
+
 # This rule defines how to build the final executable ($(TARGET)).
 # It depends on all the object files listed in $(OBJS). This rule will only run if
 # the target executable doesn't exist or if any of the object files are newer.
@@ -55,10 +63,19 @@ $(TARGET): $(OBJS)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+# This rule defines how to build the test executable
+$(PCAP_READER_TEST_TARGET): $(PCAP_READER_TEST_OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 # This is a pattern rule that tells 'make' how to create an object file (e.g., obj/main.o)
 # from a source file (e.g., src/main.c).
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+$(OBJ_DIR)/%.o: src/%.c
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
+# This new rule handles source files from the 'tests' directory
+$(OBJ_DIR)/%.o: tests/%.c
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
