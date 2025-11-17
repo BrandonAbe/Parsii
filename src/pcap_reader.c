@@ -27,7 +27,7 @@ int process_pcap_file(const char* filepath){
 
     /* Read global header */
     pcap_global_header_t global_header;
-    // Read the global header from the file
+    // Read the global header from the file, populating the global_header structure
     size_t bytes_read = fread(&global_header, sizeof(pcap_global_header_t), 1, file);
     if (bytes_read != 1) {
         perror("Error reading global header");
@@ -39,20 +39,17 @@ int process_pcap_file(const char* filepath){
     /* Check magic number to determine endianness */
     int swap_bytes = 0; // Flag to indicate if byte swapping is needed
     if (global_header.magic_number == 0xa1b2c3d4) {
-        // Magic number for native byte order
         printf("PCAP file is in native byte order (no byte swapping needed)\n");
     } else if (global_header.magic_number == 0xd4c3b2a1) {
-        // Magic number for swapped byte order
         printf("PCAP file is in swapped byte order (byte swapping needed)\n");
         swap_bytes = 1;
     } else {
-        // Invalid magic number
         fprintf(stderr, "Error: Not a valid PCAP file (invalid magic number).\n");
         fclose(file);
         return -1;
     }
 
-    // If byte swapping is needed, swap the fields in the global header
+    /* If byte swapping is needed, swap the fields in the global header */
     if (swap_bytes) {
         global_header.version_major = swap_uint16(global_header.version_major);
         global_header.version_minor = swap_uint16(global_header.version_minor);
@@ -67,7 +64,33 @@ int process_pcap_file(const char* filepath){
     printf("Snapshot Length: %u\n", global_header.snaplen);
     printf("Link-Layer Header Type: %u\n", global_header.network);
 
-    /* Loop through all packets in the file */
+    /* Verify PCAP Version is at least 2. this will allow verification that PCAP standard from 1998 is met before we process the data. */
+    if (global_header.version_major == 2 && global_header.version_minor >= 0) {
+        printf("PCAP version is valid (>= 2.0)\n");
+    } else {
+        fprintf(stderr, "Error: Unsupported PCAP version %u.%u. Minimum required is 2.0.\n", global_header.version_major, global_header.version_minor);
+        fclose(file);
+        return -1;
+    }
+
+    /* Verify snapshot length, should be 0 by default */
+    if (global_header.snaplen == 0) {
+        printf("Snapshot length is valid (0 means no limit)\n");
+    } else {
+        printf("Warning: Snapshot length is set to %u. This may limit packet capture size.\n", global_header.snaplen);
+    }
+
+    /* Verify network type */
+    if (global_header.network == 1) { // 1 indicates Ethernet
+        printf("Link-layer header type is Ethernet (1)\n");
+    } else {
+        printf("Warning: Unsupported link-layer header type %u. Only Ethernet (1) is fully supported.\n", global_header.network);
+        fclose(file);
+        return -1;
+    }
+
+
+    /* After all checks pass, loop through all packets in the file */
     pcap_record_header_t record_header;
     int packet_count = 0;
     // Read packet records until the end of the file
@@ -81,6 +104,12 @@ int process_pcap_file(const char* filepath){
             record_header.ts_usec = swap_uint32(record_header.ts_usec);
             record_header.incl_len = swap_uint32(record_header.incl_len);
             record_header.orig_len = swap_uint32(record_header.orig_len);
+        }
+
+        /* Check included length vs original length */
+        if (record_header.incl_len > record_header.orig_len){
+            fprintf(stderr, "Error: Included length (%u) exceeds original length (%u) in packet %d. Skipping packet.\n", record_header.incl_len, record_header.orig_len, packet_count);
+            continue;
         }
 
         // Print the record header information
