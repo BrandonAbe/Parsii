@@ -54,10 +54,10 @@ pcap_parser/
 ### **Phase 1️⃣: Initial PCAP Reading**
 - [✅] Load PCAP file from path specified in argv
 - [✅] Verify endianess of loaded PCAP file to check if swapping byte order is required
-- [❌] Support basic PCAP format parsing
-- [❌] Extract packet timestamps
-- [❌] Handle different link types
-- [❌] Validate file integrity
+- [✅] Support basic PCAP format parsing
+- [❌] Extract packet timestamps to track transmition time between packets
+- [✅] Handle different link types
+- [✅] Validate file integrity
 ---
 ### **Phase 2️⃣: Protocol Identification**
 - [❌] Detect Ethernet frame type
