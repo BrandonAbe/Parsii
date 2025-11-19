@@ -52,10 +52,12 @@ pcap_parser/
 ```
 ---
 ### **Phase 1️⃣: Initial PCAP Reading**
-- [❌] Support basic PCAP format parsing
-- [❌] Extract packet timestamps
-- [❌] Handle different link types
-- [❌] Validate file integrity
+- [✅] Load PCAP file from path specified in argv
+- [✅] Verify endianess of loaded PCAP file to check if swapping byte order is required
+- [✅] Support basic PCAP format parsing
+- [✅] Extract packet timestamps to track transmition time between packets
+- [✅] Handle different link types
+- [✅] Validate file integrity
 ---
 ### **Phase 2️⃣: Protocol Identification**
 - [❌] Detect Ethernet frame type
@@ -96,4 +98,10 @@ pcap_parser/
   ```bash
   ./pcap_parser test.pcap --filter gptp --summary
   ./pcap_parser test.pcap --verify-cycle --src 192.168.0.10 --dst 192.168.0.20
-
+---
+### Reference Documentation
+- https://wiki.wireshark.org/Development/LibpcapFileFormat
+- https://cplusplus.com/reference/cstdio/fopen/
+- https://cplusplus.com/reference/cstdio/perror/ 
+- https://www.tcpdump.org/linktypes.html
+- https://eci.intel.com/docs/3.0/development/tsnrefsw/tsn-overview.html 

@@ -1,2 +1,5 @@
 *.pcap
 GEMINI.md
+.vscode/
+*.o
+bin/
