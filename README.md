@@ -55,7 +55,7 @@ pcap_parser/
 - [✅] Load PCAP file from path specified in argv
 - [✅] Verify endianess of loaded PCAP file to check if swapping byte order is required
 - [✅] Support basic PCAP format parsing
-- [❌] Extract packet timestamps to track transmition time between packets
+- [✅] Extract packet timestamps to track transmition time between packets
 - [✅] Handle different link types
 - [✅] Validate file integrity
 ---
