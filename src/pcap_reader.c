@@ -124,7 +124,7 @@ int process_pcap_file(const char* filepath){
         if (packet_count > 1) {
             double time_delta = (double)(record_header.ts_sec - prev_ts_sec) + 
                                 (double)(record_header.ts_usec - prev_ts_usec) / 1000000.0;
-            printf("Inter-arrival Time: %.9f seconds\n", time_delta);
+            printf("Time since last packet: %.6f seconds\n", time_delta);
         }
 
         /* Store current packet's timestamp for the next iteration */
