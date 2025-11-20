@@ -105,3 +105,5 @@ pcap_parser/
 - https://cplusplus.com/reference/cstdio/perror/ 
 - https://www.tcpdump.org/linktypes.html
 - https://eci.intel.com/docs/3.0/development/tsnrefsw/tsn-overview.html 
+- https://pubs.opengroup.org/onlinepubs/7908799/xns/arpainet.h.html 
+- https://www.geeksforgeeks.org/c/snprintf-c-library/ 
