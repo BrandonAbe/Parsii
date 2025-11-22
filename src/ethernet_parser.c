@@ -17,7 +17,7 @@ void print_mac_address(const uint8_t* mac_address){
 }
 
 void process_ethernet_header(const unsigned char* packet_data, int data_length){
-    if (data_length < sizeof(ethernet_header_t)){
+    if (data_length < (int)sizeof(ethernet_header_t)){
         fprintf(stderr, 
             "Error: Incomplete Ethernet header. Packet is too small (got %d bytes, requires at least %zu bytes).\n",
             data_length,
