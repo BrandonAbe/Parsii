@@ -2,6 +2,7 @@
 #include <../include/utils.h>
 #include <../include/ethernet.h>
 #include <arpa/inet.h> // For ntohs, to convert network byte order to host byte order
+#include <../include/ip.h>
 
 void mac_address_to_string(char* buf, size_t buf_size, const uint8_t mac_address){
     snprintf(buf, buf_size, "%02X:%02X:%02X:%02X:%02X:%02X",                                                                                                                                                                                                                     
@@ -37,7 +38,7 @@ void process_ethernet_header(const unsigned char* packet_data, int data_length){
 
 
     /* Extracts and converts the EtherType field from the Ethernet frame header to host byte order */
-    uint16_t ethertype = ntohs(eth_header->ethertype)
+    uint16_t ethertype = ntohs(eth_header->ethertype);
 
     /* Print Ethernet header data to Stdout */
     printf("Ethernet Header:\n");
@@ -49,12 +50,17 @@ void process_ethernet_header(const unsigned char* packet_data, int data_length){
     switch(ethertype){ // Print human-readable ethernet type
         case ETHERTYPE_IPV4:
             printf("IPv4\n");
+            process_ipv4_header(packet_data + sizeof(ethernet_header_t), data_length - sizeof(ethernet_header_t));
             break;
         case ETHERTYPE_IPV6:
             printf("IPv6\n");
+            //process_ipv6_header(packet_data + sizeof(ethernet_header_t), data_length - sizeof(ethernet_header_t));
+            // commented out to focus on IPv4
             break;
         case ETHERTYPE_ARP:
             printf("ARP\n");
+            //process_arp_header(packet_data + sizeof(ethernet_header_t), data_length - sizeof(ethernet_header_t));
+            // commented out to focus on IPv4 and IPv6
             break;
         default:
             printf("ERROR: Unsupported EtherType)\n");
