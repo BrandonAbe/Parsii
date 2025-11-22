@@ -27,7 +27,7 @@ typedef enum {
 } ethertype_t;
 
 void print_mac_address(const uint8_t* mac_address); //  6 byte array pointer
-void mac_address_to_string(char* buf, size_t buf_size, const uint8_t mac_address);
+void mac_address_to_string(char* buf, size_t buf_size, const uint8_t* mac_address);
 void process_ethernet_header(const unsigned char* packet_data, int data_length); 
 
 #endif // ETHERNET_H
