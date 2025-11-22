@@ -107,3 +107,4 @@ pcap_parser/
 - https://eci.intel.com/docs/3.0/development/tsnrefsw/tsn-overview.html 
 - https://pubs.opengroup.org/onlinepubs/7908799/xns/arpainet.h.html 
 - https://www.geeksforgeeks.org/c/snprintf-c-library/ 
+- https://www.geeksforgeeks.org/computer-networks/introduction-and-ipv4-datagram-header/
