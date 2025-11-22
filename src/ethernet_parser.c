@@ -4,7 +4,7 @@
 #include <arpa/inet.h> // For ntohs, to convert network byte order to host byte order
 #include <../include/ip.h>
 
-void mac_address_to_string(char* buf, size_t buf_size, const uint8_t mac_address){
+void mac_address_to_string(char* buf, size_t buf_size, const uint8_t* mac_address){
     snprintf(buf, buf_size, "%02X:%02X:%02X:%02X:%02X:%02X",                                                                                                                                                                                                                     
         mac_address[0], mac_address[1], mac_address[2],                                                                                                                                                                                                                       
         mac_address[3], mac_address[4], mac_address[5]);                                                                                                                                                                                                                      
