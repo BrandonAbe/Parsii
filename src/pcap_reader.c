@@ -13,6 +13,7 @@
 #include <string.h>
 #include "../include/pcap.h"
 #include "../include/utils.h"
+#include "../include/ethernet.h"
 
 /* Function to read and process a pcap file */
 int process_pcap_file(const char* filepath){
@@ -146,7 +147,9 @@ int process_pcap_file(const char* filepath){
             break; // Exit the loop if the packet data cannot be fully read
         }
 
-        // TODO: Process the packet data (e.g., parse Ethernet, IP, TCP/UDP headers)
+        // Process the packet data (e.g., parse Ethernet, IP, TCP/UDP headers)
+        process_ethernet_header(packet_data, record_header.incl_len);
+
         printf("Packet data read successfully (%zu bytes).\n", data_bytes_read);
 
 
