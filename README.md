@@ -60,7 +60,7 @@ pcap_parser/
 - [✅] Validate file integrity
 ---
 ### **Phase 2️⃣: Protocol Identification**
-- [❌] Detect Ethernet frame type
+- [✅] Detect Ethernet frame type
 - [❌] Parse IP headers (v4/v6)
 - [❌] Identify PTP/gPTP traffic
 - [❌] Filter non-PTP packets
@@ -98,6 +98,13 @@ pcap_parser/
   ```bash
   ./pcap_parser test.pcap --filter gptp --summary
   ./pcap_parser test.pcap --verify-cycle --src 192.168.0.10 --dst 192.168.0.20
+---
+### **Phase 6️⃣: Performance Optimization**
+- [❌] Refactor to a multi-threaded producer-consumer model
+- [❌] Implement a single producer thread for reading the PCAP file
+- [❌] Implement a pool of consumer threads for parallel packet processing
+- [❌] Create a thread-safe work queue for communication
+- [❌] Update Makefile to link with pthread library
 ---
 ### Reference Documentation
 - https://wiki.wireshark.org/Development/LibpcapFileFormat
