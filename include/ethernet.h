@@ -12,18 +12,11 @@ typedef struct {
 } ethernet_header_t;
 
 typedef enum {
-    ETHERTYPE_IPV4      = 0x0800, // IPv4
+    ETHERTYPE_IPV4      = 0x0800, // IP Internet Protocol version 4 (IPv4)
     ETHERTYPE_ARP       = 0x0806, // ARP
-    ETHERTYPE_WOL       = 0x0842, // Wake-on-LAN (Magic Packet)
-    ETHERTYPE_RARP      = 0x8035, // Reverse ARP
-    ETHERTYPE_8021Q     = 0x8100, // 802.1Q VLAN-tagged frames
-    ETHERTYPE_MPLS_UC   = 0x8847, // MPLS unicast
-    ETHERTYPE_MPLS_MC   = 0x8848, // MPLS multicast
-    ETHERTYPE_PPPOE_DISC= 0x8863, // PPPoE Discovery
-    ETHERTYPE_PPPOE     = 0x8864, // PPPoE Session
-    ETHERTYPE_EAPOL     = 0x888E, // EAP over LAN
-    ETHERTYPE_LLDP      = 0x88CC, // LLDP
-    ETHERTYPE_IPV6      = 0x86DD  // IPv6
+    ETHERTYPE_VLAN      = 0x8100, // VLAN-tagged frame (IEEE 802.1Q)
+    ETHERTYPE_IPV6      = 0x86DD  // IP Internet Protocol version 6 (IPv6)
+    ETHERTYPE_PTP       = 0x88F7  // Precision Time Protocol
 } ethertype_t;
 
 void print_mac_address(const uint8_t* mac_address); //  6 byte array pointer
