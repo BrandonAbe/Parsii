@@ -15,7 +15,7 @@ typedef enum {
     ETHERTYPE_IPV4      = 0x0800, // IP Internet Protocol version 4 (IPv4)
     ETHERTYPE_ARP       = 0x0806, // ARP
     ETHERTYPE_VLAN      = 0x8100, // VLAN-tagged frame (IEEE 802.1Q)
-    ETHERTYPE_IPV6      = 0x86DD  // IP Internet Protocol version 6 (IPv6)
+    ETHERTYPE_IPV6      = 0x86DD,  // IP Internet Protocol version 6 (IPv6)
     ETHERTYPE_PTP       = 0x88F7  // Precision Time Protocol
 } ethertype_t;
 
