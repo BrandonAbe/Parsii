@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include "pcap.h"
+
 
 /* Ethernet II header structure (14 bytes) */
 typedef struct {
@@ -21,6 +23,6 @@ typedef enum {
 
 void print_mac_address(const uint8_t* mac_address); //  6 byte array pointer
 void mac_address_to_string(char* buf, size_t buf_size, const uint8_t* mac_address);
-void process_ethernet_header(const unsigned char* packet_data, int data_length); 
+void process_ethernet_header(file_context_t* file_ctx, const unsigned char* packet_data, int data_length); 
 
 #endif // ETHERNET_H
