@@ -1,8 +1,9 @@
 #include <stdio.h>
-#include <../include/utils.h>
-#include <../include/ethernet.h>
-#include <arpa/inet.h> // For ntohs, to convert network byte order to host byte order
-#include <../include/ip.h>
+#include "utils.h"
+#include "ethernet.h"
+#include "ip.h"
+#include "pcap.h"
+
 
 void mac_address_to_string(char* buf, size_t buf_size, const uint8_t* mac_address){
     snprintf(buf, buf_size, "%02X:%02X:%02X:%02X:%02X:%02X",                                                                                                                                                                                                                     
@@ -16,7 +17,7 @@ void print_mac_address(const uint8_t* mac_address){
     printf("%s", mac_str);
 }
 
-void process_ethernet_header(const unsigned char* packet_data, int data_length){
+void process_ethernet_header(file_context_t* file_ctx, unsigned char* packet_data, int data_length){
     if (data_length < (int)sizeof(ethernet_header_t)){
         fprintf(stderr, 
             "Error: Incomplete Ethernet header. Packet is too small (got %d bytes, requires at least %zu bytes).\n",
@@ -28,43 +29,22 @@ void process_ethernet_header(const unsigned char* packet_data, int data_length){
     /* Treat the first bytes of packet_data as an ethernet_header_t */
     const ethernet_header_t* eth_header = (const ethernet_header_t*)packet_data;
 
-    /* Buffers to hold formatted MAC address strings */
-    char dest_mac_str[18];
-    char src_mac_str[18];
+    /* Use context-aware swap function if needed */
+    uint16_t ethertype = file_ctx->swap_bytes ? swap_uint16(eth_header->ethertype) : eth_header->ethertype;
 
-    /* Format MAC addresses into buffers */
-    mac_address_to_string(dest_mac_str, sizeof(dest_mac_str), eth_header->dest_mac);
-    mac_address_to_string(src_mac_str, sizeof(src_mac_str), eth_header->src_mac);
-
-
-    /* Extracts and converts the EtherType field from the Ethernet frame header to host byte order */
-    uint16_t ethertype = ntohs(eth_header->ethertype);
 
     /* Print Ethernet header data to Stdout */
     printf("Ethernet Header:\n");
-    printf("Destination MAC: %s\n", dest_mac_str);    
-    printf("Source MAC: %s\n", src_mac_str);
-    printf("EtherType: 0x%04X (",(unsigned int)ethertype); //Cast to unsigned int because ethertype is uint16_t; raw interpretation (verbose)
+    printf(" Destination MAC: ");
+    print_mac_address(eth_header->dest_mac);    
+    printf("\n Source MAC: ");
+    print_mac_address(eth_header->src_mac);
+    printf("EtherType: 0x%04X\n", ethertype);
 
+    /* Define pointers for next layer */
+    const uint8_t* network_layer_data = packet_data + sizeof(ethernet_header_t);
+    uint32_t network_layer_length = data_length - sizeof(ethernet_header_t);
 
-    switch(ethertype){ // Print human-readable ethernet type
-        case ETHERTYPE_IPV4:
-            printf("IPv4\n");
-            process_ipv4_header(packet_data + sizeof(ethernet_header_t), data_length - sizeof(ethernet_header_t));
-            break;
-        case ETHERTYPE_IPV6:
-            printf("IPv6\n");
-            //process_ipv6_header(packet_data + sizeof(ethernet_header_t), data_length - sizeof(ethernet_header_t));
-            // commented out to focus on IPv4
-            break;
-        case ETHERTYPE_ARP:
-            printf("ARP\n");
-            //process_arp_header(packet_data + sizeof(ethernet_header_t), data_length - sizeof(ethernet_header_t));
-            // commented out to focus on IPv4 and IPv6
-            break;
-        default:
-            printf("ERROR: Unsupported EtherType)\n");
-            break;
-    }
-
+    /* Hand off to network layer parser */
+    parse_network_layer_header(file_ctx, network_layer_data, network_layer_length, ethertype);
 }
