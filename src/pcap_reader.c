@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "../include/pcap.h"
+#include "../include/ip.h"
 #include "../include/utils.h"
 #include "../include/ethernet.h"
 
@@ -38,12 +39,13 @@ int process_pcap_file(const char* filepath){
     printf("PCAP Global Header read successfully.\n");
 
     /* Check magic number to determine endianness */
-    int swap_bytes = 0; // Flag to indicate if byte swapping is needed
+    file_context_t file_ctx;
+    file_ctx.swap_bytes = 0; // Initialize to no swapping
     if (global_header.magic_number == 0xa1b2c3d4) {
         printf("PCAP file is in native byte order (no byte swapping needed)\n");
     } else if (global_header.magic_number == 0xd4c3b2a1) {
         printf("PCAP file is in swapped byte order (byte swapping needed)\n");
-        swap_bytes = 1;
+        file_ctx.swap_bytes = 1;
     } else {
         fprintf(stderr, "Error: Not a valid PCAP file (invalid magic number).\n");
         fclose(file);
@@ -51,7 +53,7 @@ int process_pcap_file(const char* filepath){
     }
 
     /* If byte swapping is needed, swap the fields in the global header */
-    if (swap_bytes) {
+    if (file_ctx.swap_bytes) {
         global_header.version_major = swap_uint16(global_header.version_major);
         global_header.version_minor = swap_uint16(global_header.version_minor);
         global_header.thiszone = swap_uint32(global_header.thiszone);
@@ -102,7 +104,7 @@ int process_pcap_file(const char* filepath){
         printf("\n--- Packet %d ---\n", packet_count);
 
         // If byte swapping is needed, swap the fields in the record header
-        if (swap_bytes) {
+        if (file_ctx.swap_bytes) {
             record_header.ts_sec = swap_uint32(record_header.ts_sec);
             record_header.ts_usec = swap_uint32(record_header.ts_usec);
             record_header.incl_len = swap_uint32(record_header.incl_len);
@@ -148,11 +150,8 @@ int process_pcap_file(const char* filepath){
         }
 
         // Process the packet data (e.g., parse Ethernet, IP, TCP/UDP headers)
-        process_ethernet_header(packet_data, record_header.incl_len);
-
+        process_ethernet_header(&file_ctx, packet_data, record_header.incl_len);
         printf("Packet data read successfully (%zu bytes).\n", data_bytes_read);
-
-
         // Free the allocated memory for the packet data
         free(packet_data);
     }
