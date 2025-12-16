@@ -115,3 +115,7 @@ pcap_parser/
 - https://pubs.opengroup.org/onlinepubs/7908799/xns/arpainet.h.html 
 - https://www.geeksforgeeks.org/c/snprintf-c-library/ 
 - https://www.geeksforgeeks.org/computer-networks/introduction-and-ipv4-datagram-header/
+- https://en.wikipedia.org/wiki/IPv4
+- https://en.wikipedia.org/wiki/IPv6
+- https://en.wikipedia.org/wiki/Address_Resolution_Protocol 
+- https://en.wikipedia.org/wiki/UDP
