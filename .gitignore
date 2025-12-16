@@ -2,3 +2,5 @@
 .vscode/
 *.o
 bin/
+.venv
+pcap_generator
