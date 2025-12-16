@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include "pcap.h"
+#include "ethernet.h"
 
 
 /* Define IPv4 Header struct based on documentation of */
@@ -32,11 +34,11 @@ typedef struct {
 
 /* Define ARP Header struct based on documentation of */
 typedef struct {
-    uint16_t htype;           // Hardware Type
-    uint16_t ptype;           // Protocol Type
-    uint8_t hlen;             // Hardware Address Length
-    uint8_t plen;             // Protocol Address Length
-    uint16_t oper;            // Operation
+    uint16_t htype;          // Hardware Type, 1 = Ethernet
+    uint16_t ptype;          // Protocol Type, 0x0800 = IPv4, 0x86DD = IPv6
+    uint8_t hlen;            // Hardware Address Length, 6 for MAC addresses
+    uint8_t plen;            // Protocol Address Length, 4 for IPv4 addresses
+    uint16_t oper;           // Operation, 1 = request, 2 = reply
     uint8_t sha[6];          // Sender Hardware Address
     uint8_t spa[4];          // Sender Protocol Address
     uint8_t tha[6];          // Target Hardware Address
@@ -50,10 +52,15 @@ typedef struct {
     uint16_t checksum;    // Checksum
 } udp_header_t;
 
+/* Define PTP Constants */
+#define PTP_EVENT_PORT 319
+#define PTP_GENERAL_PORT 320
 
 /* Function prototypes for processing headers */
-void process_ipv4_header(const unsigned char* packet_data, int data_length);
-void process_ipv6_header(const unsigned char* packet_data, int data_length);
-void process_arp_header(const unsigned char* packet_data, int data_length);
+void parse_network_layer_header(file_context_t* file_ctx, const uint8_t* packet_data, int data_length, uint16_t eth_type);
+void process_ipv4_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length);
+void process_ipv6_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length);
+void process_arp_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length);
+void ip_to_string(uint32_t ip_raw, char* ip_str);
 
 #endif // IP_H
