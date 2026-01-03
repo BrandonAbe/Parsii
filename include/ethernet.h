@@ -13,6 +13,11 @@ typedef struct {
     uint16_t ethertype;     // Ethertype field
 } ethernet_header_t;
 
+typedef struct {
+    uint16_t tci;           // Tag Control Identifier
+    uint16_t ethertype;     // Ethertype of the encapsulated frame
+} vlan_header_t;
+
 typedef enum {
     ETHERTYPE_IPV4      = 0x0800, // IP Internet Protocol version 4 (IPv4)
     ETHERTYPE_ARP       = 0x0806, // ARP
