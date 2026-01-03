@@ -14,15 +14,11 @@
 
 /* Define common values */
 #define MAC_ADDR_LEN 6
-#define ETHERTYPE_VLAN 0x8100
-#define ETHERTYPE_IPV4 0x0800
-#define ETHERTYPE_IPV6 0x86DD
-#define ETHERTYPE_ARP 0x0806
-#define ETHERTYPE_PTP 0x88F7
 #define ETHERNET_HEADER_LEN 14
 
 /* Functions to swap values */
 uint16_t swap_uint16(uint16_t val);
 uint32_t swap_uint32(uint32_t val);
+int is_little_endian();
 
 #endif // UTILS_H
