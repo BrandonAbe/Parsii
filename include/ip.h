@@ -57,10 +57,10 @@ typedef struct {
 #define PTP_GENERAL_PORT 320
 
 /* Function prototypes for processing headers */
-void parse_network_layer_header(file_context_t* file_ctx, const uint8_t* packet_data, int data_length, uint16_t eth_type);
 void process_ipv4_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length);
 void process_ipv6_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length);
-void process_arp_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length);
-void ip_to_string(uint32_t ip_raw, char* ip_str);
+void parse_network_layer_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length, uint16_t ethertype);
+void ipv4_to_string(uint32_t ip_raw, char* ip_str);
+void ipv6_to_string(const uint8_t* ip_raw, char* ip_str);
 
 #endif // IP_H
