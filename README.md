@@ -61,8 +61,9 @@ pcap_parser/
 ---
 ### **Phase 2️⃣: Protocol Identification**
 - [✅] Detect Ethernet frame type
+- [✅] Parse VLAN headers
 - [✅] Parse IPv4 headers
-- [❌] Parse IPv6 headers
+- [✅] Parse IPv6 headers
 - [❌] Identify PTP/gPTP traffic
 - [❌] Filter non-PTP packets
 ---
@@ -120,3 +121,4 @@ pcap_parser/
 - https://en.wikipedia.org/wiki/IPv6
 - https://en.wikipedia.org/wiki/Address_Resolution_Protocol 
 - https://en.wikipedia.org/wiki/User_Datagram_Protocol
+- https://en.wikipedia.org/wiki/IEEE_802.1Q 
