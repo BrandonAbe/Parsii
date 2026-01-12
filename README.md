@@ -64,8 +64,8 @@ pcap_parser/
 - [✅] Parse VLAN headers
 - [✅] Parse IPv4 headers
 - [✅] Parse IPv6 headers
-- [❌] Identify PTP/gPTP traffic
-- [❌] Filter non-PTP packets
+- [✅] Identify PTP/gPTP traffic
+- [✅] Filter non-PTP packets
 ---
 ### **Phase 3️⃣: PTP Message Parsing**
 - [❌] Support message types:
