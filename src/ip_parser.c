@@ -115,10 +115,6 @@ void parse_network_layer_header(file_context_t* file_ctx, const uint8_t* packet_
         case ETHERTYPE_IPV6:
             process_ipv6_header(file_ctx, packet_data, data_length);
             break;
-        case ETHERTYPE_ARP:
-            // process_arp_header(file_ctx, packet_data, data_length);
-            printf("ARP packet, not parsing yet.\n");
-            break;
         case ETHERTYPE_PTP:
             process_ptp_header(file_ctx, packet_data, data_length);
             break;
