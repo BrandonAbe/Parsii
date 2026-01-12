@@ -1,5 +1,6 @@
 *.pcap
-GEMINI.md
 .vscode/
 *.o
 bin/
+.venv
+pcap_generator

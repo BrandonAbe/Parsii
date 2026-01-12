@@ -12,10 +12,12 @@
 #include <stdint.h>
 #include <string.h>
 #include "../include/pcap.h"
+#include "../include/ip.h"
 #include "../include/utils.h"
+#include "../include/ethernet.h"
 
 /* Function to read and process a pcap file */
-int process_pcap_file(const char* filepath){
+int process_pcap_file(const char* filepath, file_context_t* file_ctx){
     // Open the PCAP file in binary read mode
     FILE* file = fopen(filepath, "rb"); 
     if (file == NULL) {
@@ -37,12 +39,12 @@ int process_pcap_file(const char* filepath){
     printf("PCAP Global Header read successfully.\n");
 
     /* Check magic number to determine endianness */
-    int swap_bytes = 0; // Flag to indicate if byte swapping is needed
+    file_ctx->swap_bytes = 0; // Initialize to no swapping
     if (global_header.magic_number == 0xa1b2c3d4) {
         printf("PCAP file is in native byte order (no byte swapping needed)\n");
     } else if (global_header.magic_number == 0xd4c3b2a1) {
         printf("PCAP file is in swapped byte order (byte swapping needed)\n");
-        swap_bytes = 1;
+        file_ctx->swap_bytes = 1;
     } else {
         fprintf(stderr, "Error: Not a valid PCAP file (invalid magic number).\n");
         fclose(file);
@@ -50,7 +52,7 @@ int process_pcap_file(const char* filepath){
     }
 
     /* If byte swapping is needed, swap the fields in the global header */
-    if (swap_bytes) {
+    if (file_ctx->swap_bytes) {
         global_header.version_major = swap_uint16(global_header.version_major);
         global_header.version_minor = swap_uint16(global_header.version_minor);
         global_header.thiszone = swap_uint32(global_header.thiszone);
@@ -65,7 +67,7 @@ int process_pcap_file(const char* filepath){
     printf("Link-Layer Header Type: %u\n", global_header.network);
 
     /* Verify PCAP Version is at least 2. this will allow verification that PCAP standard from 1998 is met before we process the data. */
-    if (global_header.version_major == 2 && global_header.version_minor >= 0) {
+    if (global_header.version_major == 2) {
         printf("PCAP version is valid (>= 2.0)\n");
     } else {
         fprintf(stderr, "Error: Unsupported PCAP version %u.%u. Minimum required is 2.0.\n", global_header.version_major, global_header.version_minor);
@@ -76,7 +78,8 @@ int process_pcap_file(const char* filepath){
     /* Verify snapshot length, should be 0 by default */
     if (global_header.snaplen == 0) {
         printf("Snapshot length is valid (0 means no limit)\n");
-    } else {
+    }
+    else {
         printf("Warning: Snapshot length is set to %u. This may limit packet capture size.\n", global_header.snaplen);
     }
 
@@ -101,7 +104,7 @@ int process_pcap_file(const char* filepath){
         printf("\n--- Packet %d ---\n", packet_count);
 
         // If byte swapping is needed, swap the fields in the record header
-        if (swap_bytes) {
+        if (file_ctx->swap_bytes) {
             record_header.ts_sec = swap_uint32(record_header.ts_sec);
             record_header.ts_usec = swap_uint32(record_header.ts_usec);
             record_header.incl_len = swap_uint32(record_header.incl_len);
@@ -146,10 +149,9 @@ int process_pcap_file(const char* filepath){
             break; // Exit the loop if the packet data cannot be fully read
         }
 
-        // TODO: Process the packet data (e.g., parse Ethernet, IP, TCP/UDP headers)
+        // Process the packet data (e.g., parse Ethernet, IP, TCP/UDP headers)
+        process_ethernet_header(file_ctx, packet_data, record_header.incl_len);
         printf("Packet data read successfully (%zu bytes).\n", data_bytes_read);
-
-
         // Free the allocated memory for the packet data
         free(packet_data);
     }

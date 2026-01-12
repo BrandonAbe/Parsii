@@ -60,10 +60,12 @@ pcap_parser/
 - [✅] Validate file integrity
 ---
 ### **Phase 2️⃣: Protocol Identification**
-- [❌] Detect Ethernet frame type
-- [❌] Parse IP headers (v4/v6)
-- [❌] Identify PTP/gPTP traffic
-- [❌] Filter non-PTP packets
+- [✅] Detect Ethernet frame type
+- [✅] Parse VLAN headers
+- [✅] Parse IPv4 headers
+- [✅] Parse IPv6 headers
+- [✅] Identify PTP/gPTP traffic
+- [✅] Filter non-PTP packets
 ---
 ### **Phase 3️⃣: PTP Message Parsing**
 - [❌] Support message types:
@@ -99,9 +101,24 @@ pcap_parser/
   ./pcap_parser test.pcap --filter gptp --summary
   ./pcap_parser test.pcap --verify-cycle --src 192.168.0.10 --dst 192.168.0.20
 ---
+### **Phase 6️⃣: Performance Optimization**
+- [❌] Refactor to a multi-threaded producer-consumer model
+- [❌] Implement a single producer thread for reading the PCAP file
+- [❌] Implement a pool of consumer threads for parallel packet processing
+- [❌] Create a thread-safe work queue for communication
+- [❌] Update Makefile to link with pthread library
+---
 ### Reference Documentation
 - https://wiki.wireshark.org/Development/LibpcapFileFormat
 - https://cplusplus.com/reference/cstdio/fopen/
 - https://cplusplus.com/reference/cstdio/perror/ 
 - https://www.tcpdump.org/linktypes.html
 - https://eci.intel.com/docs/3.0/development/tsnrefsw/tsn-overview.html 
+- https://pubs.opengroup.org/onlinepubs/7908799/xns/arpainet.h.html 
+- https://www.geeksforgeeks.org/c/snprintf-c-library/ 
+- https://www.geeksforgeeks.org/computer-networks/introduction-and-ipv4-datagram-header/
+- https://en.wikipedia.org/wiki/IPv4
+- https://en.wikipedia.org/wiki/IPv6
+- https://en.wikipedia.org/wiki/Address_Resolution_Protocol 
+- https://en.wikipedia.org/wiki/User_Datagram_Protocol
+- https://en.wikipedia.org/wiki/IEEE_802.1Q 

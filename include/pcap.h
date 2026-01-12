@@ -22,7 +22,11 @@ typedef struct pcap_record_header {
     uint32_t orig_len;       /* actual length of packet */
 } pcap_record_header_t;
 
+typedef struct{
+    int swap_bytes; /* Flag to indicate if byte swapping is needed */
+    int filter_ptp; /* Flag to indicate if PTP filtering is enabled */
+} file_context_t;
 
-int process_pcap_file(const char* filepath);
+int process_pcap_file(const char* filepath, file_context_t* file_ctx);
 
 #endif
