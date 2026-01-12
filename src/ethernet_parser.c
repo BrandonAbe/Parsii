@@ -35,6 +35,9 @@ void process_ethernet_header(file_context_t* file_ctx, const unsigned char* pack
         ethertype = swap_uint16(ethertype);
     }
 
+    if (file_ctx->filter_ptp && ethertype != ETHERTYPE_PTP) {
+        return; // Skip non-PTP packets if filtering is enabled
+    }
 
     /* Print Ethernet header data to Stdout */
     printf("Ethernet Header:\n");
