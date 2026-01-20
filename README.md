@@ -68,18 +68,18 @@ pcap_parser/
 - [✅] Filter non-PTP packets
 ---
 ### **Phase 3️⃣: PTP Message Parsing**
-- [❌] Support message types:
-  - [❌] Sync (0x0)
-  - [❌] Delay_Req (0x1)
-  - [❌] Follow_Up (0x8)
-  - [❌] Delay_Resp (0x9)
-  - [❌] Announce (0xB)
-- [❌] Extract key fields:
-  - [❌] Sequence ID
-  - [❌] Source clock identity
-  - [❌] Correction field
-  - [❌] Timestamp values
-- [❌] Handle domain numbers and message flags
+- [✅] Support message types:
+  - [✅] Sync (0x0)
+  - [✅] Delay_Req (0x1)
+  - [✅] Follow_Up (0x8)
+  - [✅] Delay_Resp (0x9)
+  - [✅] Announce (0xB)
+- [✅] Extract key fields:
+  - [✅] Sequence ID
+  - [✅] Source clock identity
+  - [✅] Correction field
+  - [✅] Timestamp values
+- [✅] Handle domain numbers and message flags
 ---
 ### **Phase 4️⃣: gPTP Cycle Verification**
 - [❌] Implement mapping between master/slave clock IDs
