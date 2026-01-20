@@ -18,7 +18,7 @@ typedef enum {
     PTP_MESSAGE_MANAGEMENT          = 0xD
 } ptp_message_type_t;
 
-/* PTP Common Header (34 bytes)*/
+/* PTP Common Header */
 typedef struct {
     uint8_t  transportSpecific_messageType; // 4 bits transportSpecific, 4 bits messageType
     uint8_t  versionPTP_reserved;           // 4 bits versionPTP, 4 bits reserved
@@ -34,28 +34,28 @@ typedef struct {
     int8_t   logMessageInterval;            // Log message interval
 } ptp_common_header_t;
 
-/*  PTP Sync Message (Common header + 10 bytes) */
+/* PTP Sync Message */
 typedef struct {
     ptp_common_header_t header;
     uint64_t  originTimestamp_seconds;      // Origin Timestamp seconds
     uint32_t  originTimestamp_nanoseconds;  // Origin Timestamp nanoseconds
 } ptp_sync_message_t;
 
-/* PTP Follow_Up Message (Common header + 10 bytes) */
+/* PTP Follow_Up Message */
 typedef struct {
     ptp_common_header_t header;
     uint64_t  preciseOriginTimestamp_seconds;     // Precise Origin Timestamp seconds
     uint32_t  preciseOriginTimestamp_nanoseconds; // Precise Origin Timestamp nanoseconds
 } ptp_follow_up_message_t;
 
-/* PTP Pdelay_Req Message (Common header + 10 bytes) */ 
+/* PTP Pdelay_Req Message */ 
 typedef struct {
     ptp_common_header_t header;
     uint64_t  originTimestamp_seconds;      // Origin Timestamp seconds
     uint32_t  originTimestamp_nanoseconds;  // Origin Timestamp nanoseconds
 } ptp_pdelay_req_message_t;
 
-/* PTP Pdelay_Resp Message (Common header + 20 bytes) */
+/* PTP Pdelay_Resp Message */
 typedef struct {
     ptp_common_header_t header;
     uint64_t  requestReceiptTimestamp_seconds;      // Request Receipt Timestamp seconds
@@ -63,13 +63,43 @@ typedef struct {
     uint8_t   requestingPortIdentity[10];           // Requesting PortIdentity
 } ptp_pdelay_resp_message_t;
 
-/* PTP Pdelay_Resp_Follow_Up Message (Common header + 20 bytes) */
+/* PTP Pdelay_Resp_Follow_Up Message */
 typedef struct {
     ptp_common_header_t header;
     uint64_t  responseOriginTimestamp_seconds;      // Response Origin Timestamp seconds
     uint32_t  responseOriginTimestamp_nanoseconds;  // Response Origin Timestamp nanoseconds
     uint8_t   requestingPortIdentity[10];           // Requesting PortIdentity
 } ptp_pdelay_resp_follow_up_message_t;
+
+/* PTP Delay_Req Message */
+typedef struct {
+    ptp_common_header_t header;
+    uint64_t  originTimestamp_seconds;      // Origin Timestamp seconds
+    uint32_t  originTimestamp_nanoseconds;  // Origin Timestamp nanoseconds
+} ptp_delay_req_message_t;
+
+/* PTP Delay_Resp Message */
+typedef struct {
+    ptp_common_header_t header;
+    uint64_t  receiveTimestamp_seconds;      // Receive Timestamp seconds
+    uint32_t  receiveTimestamp_nanoseconds;  // Receive Timestamp nanoseconds
+    uint8_t   requestingPortIdentity[10];           // Requesting PortIdentity
+} ptp_delay_resp_message_t;
+
+/* PTP Announce Message */
+typedef struct {
+    ptp_common_header_t header;
+    uint64_t  originTimestamp_seconds;          // Origin Timestamp seconds
+    uint32_t  originTimestamp_nanoseconds;      // Origin Timestamp nanoseconds
+    uint16_t  currentUtcOffset;                 // Current UTC offset
+    uint8_t   reserved;
+    uint8_t   grandmasterPriority1;             // Grandmaster Priority 1
+    uint8_t   grandmasterClockQuality[4];       // Grandmaster Clock Quality
+    uint8_t   grandmasterPriority2;             // Grandmaster Priority 2
+    uint8_t   grandmasterIdentity[8];           // Grandmaster Identity
+    uint16_t  stepsRemoved;                     // Steps Removed
+    uint8_t   timeSource;                       // Time Source
+} ptp_announce_message_t;
 
 void process_ptp_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length);
 
