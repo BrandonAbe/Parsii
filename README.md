@@ -82,13 +82,13 @@ pcap_parser/
 - [✅] Handle domain numbers and message flags
 ---
 ### **Phase 4️⃣: gPTP Cycle Verification**
-- [❌] Implement mapping between master/slave clock IDs
-- [❌] Track full cycle sequence:
-  - [❌] Sync → Follow_Up → Delay_Req → Delay_Resp
-- [❌] Verify that all message types occurred between given MAC/IP pairs
-- [❌] Detect missing or out-of-order packets
-- [❌] Compute timing deltas and cycle duration
-- [❌] Report if a full valid gPTP cycle occurred
+- [✅] Implement mapping between master/slave clock IDs
+- [✅] Track full cycle sequence:
+  - [✅] Sync → Follow_Up → Delay_Req → Delay_Resp
+- [✅] Verify that all message types occurred between given MAC/IP pairs
+- [✅] Detect missing or out-of-order packets
+- [✅] Compute timing deltas and cycle duration
+- [✅] Report if a full valid gPTP cycle occurred
 ---
 ### 🏁 **Phase 5️⃣: Analysis and Reporting**
 - [❌] Add summary statistics:
