@@ -4,6 +4,8 @@
 
 /* Include Statements */
 #include <stdint.h>
+#include "clock_map.h"      // Include clock_map.h
+#include "gptp_validator.h" // Include gptp_validator.h
 
 typedef struct pcap_global_header {
     uint32_t magic_number;   /* magic number to detect file format and byte ordering */
@@ -25,6 +27,8 @@ typedef struct pcap_record_header {
 typedef struct{
     int swap_bytes; /* Flag to indicate if byte swapping is needed */
     int filter_ptp; /* Flag to indicate if PTP filtering is enabled */
+    clock_map_t clock_map;      // Add clock map to file context
+    gptp_cycle_map_t cycle_map; // Add gPTP cycle map to file context
 } file_context_t;
 
 int process_pcap_file(const char* filepath, file_context_t* file_ctx);

@@ -1,19 +1,17 @@
 #include "../include/ptp.h"
 #include "../include/utils.h"
+#include "../include/clock_map.h" 
+#include "../include/gptp_validator.h" 
 #include <stdio.h>
 #include <string.h> // For memcpy
 
-/* Function to print common PTP header information */
+// Prints common PTP header information.
 static void print_common_ptp_header_info(const ptp_common_header_t* header) {
-    // Extract transportSpecific and messageType
     uint8_t transportSpecific = (header->transportSpecific_messageType >> 4) & 0x0F;
     ptp_message_type_t messageType = header->transportSpecific_messageType & 0x0F;
-
-    // Extract versionPTP and reserved
     uint8_t versionPTP = (header->versionPTP_reserved >> 4) & 0x0F;
 
-    // Port Identity (ClockIdentity and PortNumber)
-    char port_identity_str[22]; // 8 bytes ClockIdentity + 2 bytes PortNumber + null terminator
+    char port_identity_str[22]; 
     snprintf(port_identity_str, sizeof(port_identity_str), "%02x%02x%02x%02x%02x%02x%02x%02x:%04x",
              header->sourcePortIdentity[0], header->sourcePortIdentity[1],
              header->sourcePortIdentity[2], header->sourcePortIdentity[3],
@@ -46,9 +44,9 @@ static void print_common_ptp_header_info(const ptp_common_header_t* header) {
     printf("            Log Message Interval: %d\n", header->logMessageInterval);
 }
 
-/* Function to process PTP Sync messages */
+// Processes PTP Sync messages.
 static void process_sync_message(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length) {
-    if (data_length < sizeof(ptp_common_header_t) + 10) { // Common header + 10 bytes for originTimestamp
+    if (data_length < sizeof(ptp_common_header_t) + 10) { 
         fprintf(stderr, "Truncated PTP Sync message\n");
         return;
     }
@@ -56,13 +54,9 @@ static void process_sync_message(file_context_t* file_ctx, const uint8_t* packet
     ptp_sync_message_t sync_message;
     memcpy(&sync_message.header, packet_data, sizeof(ptp_common_header_t));
 
-    // Common header fields (already parsed in process_ptp_header, but useful for context here)
-    // Note: messageLength from common header can be used to determine overall PTP message length
-
-    // Parse Sync message specific fields
     uint32_t offset = sizeof(ptp_common_header_t);
     sync_message.originTimestamp_seconds = bytes_to_uint48(packet_data + offset, file_ctx->swap_bytes);
-    offset += 6; // 6 bytes for 48-bit field
+    offset += 6; 
     sync_message.originTimestamp_nanoseconds = BYTES_TO_UINT32(packet_data + offset, file_ctx->swap_bytes);
 
     printf("        PTP Sync Message:\n");
@@ -71,9 +65,9 @@ static void process_sync_message(file_context_t* file_ctx, const uint8_t* packet
 }
 
 
-/* Function to process PTP Follow_Up messages */
+// Processes PTP Follow_Up messages.
 static void process_follow_up_message(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length) {
-    if (data_length < sizeof(ptp_common_header_t) + 10) { // Common header + 10 bytes for preciseOriginTimestamp
+    if (data_length < sizeof(ptp_common_header_t) + 10) { 
         fprintf(stderr, "Truncated PTP Follow_Up message\n");
         return;
     }
@@ -81,10 +75,9 @@ static void process_follow_up_message(file_context_t* file_ctx, const uint8_t* p
     ptp_follow_up_message_t follow_up_message;
     memcpy(&follow_up_message.header, packet_data, sizeof(ptp_common_header_t));
 
-    // Parse Follow_Up message specific fields
     uint32_t offset = sizeof(ptp_common_header_t);
     follow_up_message.preciseOriginTimestamp_seconds = bytes_to_uint48(packet_data + offset, file_ctx->swap_bytes);
-    offset += 6; // 6 bytes for 48-bit field
+    offset += 6; 
     follow_up_message.preciseOriginTimestamp_nanoseconds = BYTES_TO_UINT32(packet_data + offset, file_ctx->swap_bytes);
 
     printf("        PTP Follow_Up Message:\n");
@@ -92,9 +85,9 @@ static void process_follow_up_message(file_context_t* file_ctx, const uint8_t* p
     printf("            Precise Origin Timestamp (nanoseconds): %u\n", follow_up_message.preciseOriginTimestamp_nanoseconds);
 }
 
-/* Function to process PTP Pdelay_Req messages */
+// Processes PTP Pdelay_Req messages.
 static void process_pdelay_req_message(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length) {
-    if (data_length < sizeof(ptp_common_header_t) + 10) { // Common header + 10 bytes for originTimestamp
+    if (data_length < sizeof(ptp_common_header_t) + 10) { 
         fprintf(stderr, "Truncated PTP Pdelay_Req message\n");
         return;
     }
@@ -102,10 +95,9 @@ static void process_pdelay_req_message(file_context_t* file_ctx, const uint8_t* 
     ptp_pdelay_req_message_t pdelay_req_message;
     memcpy(&pdelay_req_message.header, packet_data, sizeof(ptp_common_header_t));
 
-    // Parse Pdelay_Req message specific fields
     uint32_t offset = sizeof(ptp_common_header_t);
     pdelay_req_message.originTimestamp_seconds = bytes_to_uint48(packet_data + offset, file_ctx->swap_bytes);
-    offset += 6; // 6 bytes for 48-bit field
+    offset += 6; 
     pdelay_req_message.originTimestamp_nanoseconds = BYTES_TO_UINT32(packet_data + offset, file_ctx->swap_bytes);
 
     printf("        PTP Pdelay_Req Message:\n");
@@ -113,9 +105,9 @@ static void process_pdelay_req_message(file_context_t* file_ctx, const uint8_t* 
     printf("            Origin Timestamp (nanoseconds): %u\n", pdelay_req_message.originTimestamp_nanoseconds);
 }
 
-/* Function to process PTP Pdelay_Resp messages */
+// Processes PTP Pdelay_Resp messages.
 static void process_pdelay_resp_message(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length) {
-    if (data_length < sizeof(ptp_common_header_t) + 20) { // Common header + 20 bytes for requestReceiptTimestamp + requestingPortIdentity
+    if (data_length < sizeof(ptp_common_header_t) + 20) { 
         fprintf(stderr, "Truncated PTP Pdelay_Resp message\n");
         return;
     }
@@ -123,17 +115,15 @@ static void process_pdelay_resp_message(file_context_t* file_ctx, const uint8_t*
     ptp_pdelay_resp_message_t pdelay_resp_message;
     memcpy(&pdelay_resp_message.header, packet_data, sizeof(ptp_common_header_t));
 
-    // Parse Pdelay_Resp message specific fields
     uint32_t offset = sizeof(ptp_common_header_t);
     pdelay_resp_message.requestReceiptTimestamp_seconds = bytes_to_uint48(packet_data + offset, file_ctx->swap_bytes);
-    offset += 6; // 6 bytes for 48-bit field
+    offset += 6; 
     pdelay_resp_message.requestReceiptTimestamp_nanoseconds = BYTES_TO_UINT32(packet_data + offset, file_ctx->swap_bytes);
-    offset += 4; // 4 bytes for 32-bit field
+    offset += 4; 
 
     memcpy(pdelay_resp_message.requestingPortIdentity, packet_data + offset, 10);
 
-    // Port Identity (ClockIdentity and PortNumber)
-    char requesting_port_identity_str[22]; // 8 bytes ClockIdentity + 2 bytes PortNumber + null terminator
+    char requesting_port_identity_str[22]; 
     snprintf(requesting_port_identity_str, sizeof(requesting_port_identity_str), "%02x%02x%02x%02x%02x%02x%02x%02x:%04x",
              pdelay_resp_message.requestingPortIdentity[0], pdelay_resp_message.requestingPortIdentity[1],
              pdelay_resp_message.requestingPortIdentity[2], pdelay_resp_message.requestingPortIdentity[3],
@@ -148,9 +138,9 @@ static void process_pdelay_resp_message(file_context_t* file_ctx, const uint8_t*
 }
 
 
-/* Function to process PTP Pdelay_Resp_Follow_Up messages */
+// Processes PTP Pdelay_Resp_Follow_Up messages.
 static void process_pdelay_resp_follow_up_message(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length) {
-    if (data_length < sizeof(ptp_common_header_t) + 20) { // Common header + 20 bytes for responseOriginTimestamp + requestingPortIdentity
+    if (data_length < sizeof(ptp_common_header_t) + 20) { 
         fprintf(stderr, "Truncated PTP Pdelay_Resp_Follow_Up message\n");
         return;
     }
@@ -158,17 +148,15 @@ static void process_pdelay_resp_follow_up_message(file_context_t* file_ctx, cons
     ptp_pdelay_resp_follow_up_message_t pdelay_resp_follow_up_message;
     memcpy(&pdelay_resp_follow_up_message.header, packet_data, sizeof(ptp_common_header_t));
 
-    // Parse Pdelay_Resp_Follow_Up message specific fields
     uint32_t offset = sizeof(ptp_common_header_t);
     pdelay_resp_follow_up_message.responseOriginTimestamp_seconds = bytes_to_uint48(packet_data + offset, file_ctx->swap_bytes);
-    offset += 6; // 6 bytes for 48-bit field
+    offset += 6; 
     pdelay_resp_follow_up_message.responseOriginTimestamp_nanoseconds = BYTES_TO_UINT32(packet_data + offset, file_ctx->swap_bytes);
-    offset += 4; // 4 bytes for 32-bit field
+    offset += 4; 
 
     memcpy(pdelay_resp_follow_up_message.requestingPortIdentity, packet_data + offset, 10);
 
-    // Port Identity (ClockIdentity and PortNumber)
-    char requesting_port_identity_str[22]; // 8 bytes ClockIdentity + 2 bytes PortNumber + null terminator
+    char requesting_port_identity_str[22]; 
     snprintf(requesting_port_identity_str, sizeof(requesting_port_identity_str), "%02x%02x%02x%02x%02x%02x%02x%02x:%04x",
              pdelay_resp_follow_up_message.requestingPortIdentity[0], pdelay_resp_follow_up_message.requestingPortIdentity[1],
              pdelay_resp_follow_up_message.requestingPortIdentity[2], pdelay_resp_follow_up_message.requestingPortIdentity[3],
@@ -182,9 +170,9 @@ static void process_pdelay_resp_follow_up_message(file_context_t* file_ctx, cons
     printf("            Requesting Port Identity: %s\n", requesting_port_identity_str);
 }
 
-/* Function to process PTP Delay_Req messages */
+// Processes PTP Delay_Req messages.
 static void process_delay_req_message(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length) {
-    if (data_length < sizeof(ptp_common_header_t) + 10) { // Common header + 10 bytes for originTimestamp
+    if (data_length < sizeof(ptp_common_header_t) + 10) { 
         fprintf(stderr, "Truncated PTP Delay_Req message\n");
         return;
     }
@@ -192,10 +180,9 @@ static void process_delay_req_message(file_context_t* file_ctx, const uint8_t* p
     ptp_delay_req_message_t delay_req_message;
     memcpy(&delay_req_message.header, packet_data, sizeof(ptp_common_header_t));
 
-    // Parse Delay_Req message specific fields
     uint32_t offset = sizeof(ptp_common_header_t);
     delay_req_message.originTimestamp_seconds = bytes_to_uint48(packet_data + offset, file_ctx->swap_bytes);
-    offset += 6; // 6 bytes for 48-bit field
+    offset += 6; 
     delay_req_message.originTimestamp_nanoseconds = BYTES_TO_UINT32(packet_data + offset, file_ctx->swap_bytes);
 
     printf("        PTP Delay_Req Message:\n");
@@ -203,9 +190,9 @@ static void process_delay_req_message(file_context_t* file_ctx, const uint8_t* p
     printf("            Origin Timestamp (nanoseconds): %u\n", delay_req_message.originTimestamp_nanoseconds);
 }
 
-/* Function to process PTP Delay_Resp messages */ 
+// Processes PTP Delay_Resp messages.
 static void process_delay_resp_message(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length) {
-    if (data_length < sizeof(ptp_common_header_t) + 20) { // Common header + 20 bytes for receiveTimestamp + requestingPortIdentity
+    if (data_length < sizeof(ptp_common_header_t) + 20) { 
         fprintf(stderr, "Truncated PTP Delay_Resp message\n");
         return;
     }
@@ -213,17 +200,15 @@ static void process_delay_resp_message(file_context_t* file_ctx, const uint8_t* 
     ptp_delay_resp_message_t delay_resp_message;
     memcpy(&delay_resp_message.header, packet_data, sizeof(ptp_common_header_t));
 
-    // Parse Delay_Resp message specific fields
     uint32_t offset = sizeof(ptp_common_header_t);
     delay_resp_message.receiveTimestamp_seconds = bytes_to_uint48(packet_data + offset, file_ctx->swap_bytes);
-    offset += 6; // 6 bytes for 48-bit field
+    offset += 6; 
     delay_resp_message.receiveTimestamp_nanoseconds = BYTES_TO_UINT32(packet_data + offset, file_ctx->swap_bytes);
-    offset += 4; // 4 bytes for 32-bit field
+    offset += 4; 
 
     memcpy(delay_resp_message.requestingPortIdentity, packet_data + offset, 10);
 
-    // Port Identity (ClockIdentity and PortNumber)
-    char requesting_port_identity_str[22]; // 8 bytes ClockIdentity + 2 bytes PortNumber + null terminator
+    char requesting_port_identity_str[22]; 
     snprintf(requesting_port_identity_str, sizeof(requesting_port_identity_str), "%02x%02x%02x%02x%02x%02x%02x%02x:%04x",
              delay_resp_message.requestingPortIdentity[0], delay_resp_message.requestingPortIdentity[1],
              delay_resp_message.requestingPortIdentity[2], delay_resp_message.requestingPortIdentity[3],
@@ -237,9 +222,9 @@ static void process_delay_resp_message(file_context_t* file_ctx, const uint8_t* 
     printf("            Requesting Port Identity: %s\n", requesting_port_identity_str);
 }
 
-/* Function to process PTP Announce messages */
+// Processes PTP Announce messages.
 static void process_announce_message(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length) {
-    if (data_length < sizeof(ptp_common_header_t) + 30) { // Common header + 30 bytes for announce message
+    if (data_length < sizeof(ptp_common_header_t) + 30) { 
         fprintf(stderr, "Truncated PTP Announce message\n");
         return;
     }
@@ -247,7 +232,6 @@ static void process_announce_message(file_context_t* file_ctx, const uint8_t* pa
     ptp_announce_message_t announce_message;
     memcpy(&announce_message.header, packet_data, sizeof(ptp_common_header_t));
 
-    // Parse Announce message specific fields
     uint32_t offset = sizeof(ptp_common_header_t);
     announce_message.originTimestamp_seconds = bytes_to_uint48(packet_data + offset, file_ctx->swap_bytes);
     offset += 6;
@@ -255,7 +239,7 @@ static void process_announce_message(file_context_t* file_ctx, const uint8_t* pa
     offset += 4;
     announce_message.currentUtcOffset = BYTES_TO_UINT16(packet_data + offset, file_ctx->swap_bytes);
     offset += 2;
-    offset += 1; // reserved
+    offset += 1; 
     announce_message.grandmasterPriority1 = packet_data[offset++];
     memcpy(announce_message.grandmasterClockQuality, packet_data + offset, 4);
     offset += 4;
@@ -263,7 +247,6 @@ static void process_announce_message(file_context_t* file_ctx, const uint8_t* pa
     memcpy(announce_message.grandmasterIdentity, packet_data + offset, 8);
     offset += 8;
     announce_message.stepsRemoved = BYTES_TO_UINT16(packet_data + offset, file_ctx->swap_bytes);
-    offset += 2;
     announce_message.timeSource = packet_data[offset];
 
     char grandmaster_identity_str[24];
@@ -278,7 +261,6 @@ static void process_announce_message(file_context_t* file_ctx, const uint8_t* pa
     printf("            Origin Timestamp (nanoseconds): %u\n", announce_message.originTimestamp_nanoseconds);
     printf("            Current UTC Offset: %d\n", announce_message.currentUtcOffset);
     printf("            Grandmaster Priority 1: %u\n", announce_message.grandmasterPriority1);
-    // grandmasterClockQuality is a struct itself, printing as hex for now
     printf("            Grandmaster Clock Quality: 0x%02x%02x%02x%02x\n",
         announce_message.grandmasterClockQuality[0], announce_message.grandmasterClockQuality[1],
         announce_message.grandmasterClockQuality[2], announce_message.grandmasterClockQuality[3]);
@@ -286,10 +268,28 @@ static void process_announce_message(file_context_t* file_ctx, const uint8_t* pa
     printf("            Grandmaster Identity: %s\n", grandmaster_identity_str);
     printf("            Steps Removed: %u\n", announce_message.stepsRemoved);
     printf("            Time Source: 0x%x\n", announce_message.timeSource);
+
+    uint64_t grandmaster_id = 0;
+    uint64_t source_port_id = 0;
+    memcpy(&grandmaster_id, announce_message.grandmasterIdentity, sizeof(uint64_t));
+    memcpy(&source_port_id, announce_message.header.sourcePortIdentity, sizeof(uint64_t));
+
+    if (file_ctx->swap_bytes) {
+        grandmaster_id = swap_uint64(grandmaster_id);
+        source_port_id = swap_uint64(source_port_id);
+    }
+    
+    if (clock_map_insert(&file_ctx->clock_map, grandmaster_id, source_port_id) != 0) {
+        fprintf(stderr, "Failed to insert into clock map.\n");
+    } else {
+        printf("            Clock Map: Added Grandmaster ID %016llx -> Source Port ID %016llx\n", 
+               (unsigned long long)grandmaster_id, (unsigned long long)source_port_id);
+    }
 }
 
 
-void process_ptp_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length) {
+// Processes PTP header and dispatches to specific message handlers.
+void process_ptp_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length, const uint8_t* eth_src_mac, const uint8_t* eth_dst_mac) {
     if (data_length < sizeof(ptp_common_header_t)) {
         fprintf(stderr, "Truncated PTP common header\n");
         return;
@@ -298,19 +298,17 @@ void process_ptp_header(file_context_t* file_ctx, const uint8_t* packet_data, ui
     ptp_common_header_t common_header;
     memcpy(&common_header, packet_data, sizeof(ptp_common_header_t));
 
-    // Apply endianness correction to multi-byte fields
     if (file_ctx->swap_bytes) {
         common_header.messageLength = swap_uint16(common_header.messageLength);
         common_header.flags = swap_uint16(common_header.flags);
         common_header.correctionField = swap_uint64(common_header.correctionField);
-        // sourcePortIdentity is byte array, no swap
         common_header.sequenceId = swap_uint16(common_header.sequenceId);
-        // controlField and logMessageInterval are single bytes, no swap
     }
 
     print_common_ptp_header_info(&common_header);
 
-    // Determine message type and dispatch to specific handler
+    process_gptp_message(file_ctx, &common_header, packet_data, data_length, eth_src_mac, eth_dst_mac);
+
     ptp_message_type_t messageType = common_header.transportSpecific_messageType & 0x0F;
 
     switch (messageType) {
@@ -338,7 +336,7 @@ void process_ptp_header(file_context_t* file_ctx, const uint8_t* packet_data, ui
         case PTP_MESSAGE_ANNOUNCE:
             process_announce_message(file_ctx, packet_data, data_length);
             break;
-        case PTP_MESSAGE_SIGNALING):
+        case PTP_MESSAGE_SIGNALING:
         case PTP_MESSAGE_MANAGEMENT:
             printf("        PTP Message Type 0x%x parsing not yet implemented.\n", messageType);
             break;

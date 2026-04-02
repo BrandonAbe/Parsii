@@ -7,7 +7,7 @@
 #include "ethernet.h"
 
 
-/* Define IPv4 Header struct based on documentation of */
+// IPv4 Header structure
 typedef struct {
     uint8_t version_ihl;        // Version (4 bits) + Internet Header Length (4 bits)
     uint8_t type_of_service;    // Type of Service
@@ -22,7 +22,7 @@ typedef struct {
 } ipv4_header_t;
 
 
-/* Define IPv6 Header struct based on documentation of */
+// IPv6 Header structure
 typedef struct {
     uint32_t version_tc_flowlabel; // Version (4 bits) + Traffic Class (8 bits) + Flow Label (20 bits)
     uint16_t payload_length;       // Payload Length
@@ -32,7 +32,7 @@ typedef struct {
     uint8_t dst_ip[16];            // Destination IP Address
 } ipv6_header_t;
 
-/* Define ARP Header struct based on documentation of */
+// ARP Header structure
 typedef struct {
     uint16_t htype;          // Hardware Type, 1 = Ethernet
     uint16_t ptype;          // Protocol Type, 0x0800 = IPv4, 0x86DD = IPv6
@@ -45,6 +45,7 @@ typedef struct {
     uint8_t tpa[4];          // Target Protocol Address
 } arp_header_t;
 
+// UDP Header structure
 typedef struct {
     uint16_t src_port;    // Source Port
     uint16_t dst_port;    // Destination Port
@@ -52,15 +53,15 @@ typedef struct {
     uint16_t checksum;    // Checksum
 } udp_header_t;
 
-/* Define PTP Constants */
+// PTP Constants
 #define PTP_EVENT_PORT 319
 #define PTP_GENERAL_PORT 320
 
-/* Function prototypes for processing headers */
-void process_ipv4_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length);
-void process_ipv6_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length);
-void process_udp_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length);
-void parse_network_layer_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length, uint16_t ethertype);
+// Function prototypes for processing headers
+void process_ipv4_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length, const uint8_t* eth_src_mac, const uint8_t* eth_dst_mac);
+void process_ipv6_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length, const uint8_t* eth_src_mac, const uint8_t* eth_dst_mac);
+void process_udp_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length, const uint8_t* eth_src_mac, const uint8_t* eth_dst_mac);
+void parse_network_layer_header(file_context_t* file_ctx, const uint8_t* packet_data, uint32_t data_length, uint16_t ethertype, const uint8_t* eth_src_mac, const uint8_t* eth_dst_mac);
 void ipv4_to_string(uint32_t ip_raw, char* ip_str);
 void ipv6_to_string(const uint8_t* ip_raw, char* ip_str);
 

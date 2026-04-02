@@ -76,5 +76,5 @@ void process_ethernet_header(file_context_t* file_ctx, const unsigned char* pack
     }
 
     /* Hand off to network layer parser */
-    parse_network_layer_header(file_ctx, network_layer_data, network_layer_length, ethertype);
+    parse_network_layer_header(file_ctx, network_layer_data, network_layer_length, ethertype, eth_header->src_mac, eth_header->dest_mac);
 }
