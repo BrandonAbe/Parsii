@@ -4,3 +4,5 @@
 bin/
 .venv
 pcap_generator
+GEMINI.md
+phase4-summary.md
